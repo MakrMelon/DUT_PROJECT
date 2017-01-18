@@ -3,8 +3,17 @@
 <!-- 主体内容-->
 {% block page_content %} 
 <div class="page-header">
-    <h1>Welcome to the Blog</h1>
+    <h1>
+    	Welcome to the Blog,
+    	{% if name %}
+    	{{name}}
+    	{% else %}
+    	stranger
+    	{% endif %}
+    </h1>
     <p>The local time is {{moment(current_time).format('LLL')}}.</p>
     <p>That was {{moment(current_time).fromNow(refresh=True)}}</p>
 </div>
+<!--渲染模板 -->
+{{ wtf.quick_form(form) }}
 {% endblock %}
