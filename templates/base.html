@@ -1,0 +1,44 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Blog{% endblock %}
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" href="{{ url_for('static', filename = 'blog.png') }}"
+    type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename = 'blog.png') }}"
+    type="image/x-icon"> 
+{% endblock %}
+<!-- 导航条-->
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle"
+                data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+			</button>
+            <a class="navbar-brand" href="/">主页</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- 主体内容-->
+{% block content %} 
+<div class="container">
+    {% block page_content %}{% endblock %} 
+</div>
+{% endblock %}
+
+<!--外部导入的脚本 -->
+{% block scripts %}
+{{super()}}
+{{moment.include_moment()}}
+{% endblock %}
