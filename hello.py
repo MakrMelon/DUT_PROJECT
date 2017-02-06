@@ -11,19 +11,34 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.script import Manager
 from flask.ext.script import Shell
 from flask.ext.migrate import Migrate,MigrateCommand    #数据库迁移模块
+from flask.ext.mail import Mail,Message  
+from threading import Thread
 #时间相关
 from datetime import datetime
+import os
 
 #basedir = os.path.adspath(os.path.dirname(__file__)) #获取当前路径
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'blog for myself string'
+app.config['SECRET_KEY'] = 'blog for myself string'   #表单安全
+#数据库配置
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:211314@localhost:3306/blog'
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True #自动提交数据库中的变动
+#验证邮箱配置
+app.config['MAIL_SERVER'] = 'smtp.qq.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True  #启用传输层安全|
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') or '879671510@qq.com'
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_USERNAME') or 'ipnokqkszfxubfgb'
+app.config['MAIL_PREFIX'] = '欢迎注册本博客'
+app.config['ADMIN'] = app.config['MAIL_USERNAME']
+
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
 manager = Manager(app)
 migrate = Migrate(app,db)
+mail = Mail(app)
+
 
 class NameForm(Form):
 	name = StringField("What's your name?",validators=[Required()])
@@ -51,6 +66,21 @@ class User(db.Model):
 def make_shell_context():
 	return dict(app=app,db=db,User=User,Role=Role)
 
+#异步发送电子邮件
+def send_async_email(app,msg):
+	with app.app_context():
+		mail.send(msg)
+
+#发送电子邮件
+def send_email(to,subject,template,**kwargs):
+	msg = Message(app.config['MAIL_PREFIX'] + subject,sender=app.config['MAIL_USERNAME'],recipients=[to])
+	#msg.body = render_template(template + '.txt',**kwargs)
+	msg.body = 'text body'
+	#msg.html = render_template(template + '.html',**kwargs)
+	msg.html = '<b>HTML</b> body'
+	thr = Thread(target=send_async_email,args=[app,msg])
+	thr.start()
+	return thr
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -64,12 +94,20 @@ def internal_server_error(e):
 def index():
 	form = NameForm()
 	if form.validate_on_submit():
-		old_name = session.get('name')
-		if old_name is not None and old_name != form.name.data:
-			flash('Looks like you have changed your name!')
+		user = User.query.filter_by(username=form.name.data).first()
+		if	user is None:
+			user = User(username=form.name.data)
+			db.session.add(user)
+			session['known'] = False
+			if app.config['ADMIN']:
+				send_email(app.config['ADMIN'],'new user '+form.name.data,'mail/new_user',user=user)
+		else:
+			session['known'] = True
 		session['name'] = form.name.data
+		form.name.data = ''
 		return redirect(url_for('index'))
-	return render_template('index.html',current_time=datetime.utcnow(),name=session.get('name'),form=form)
+	return render_template('index.html',current_time=datetime.utcnow(),name=session.get('name'),\
+		form=form,known=session.get('known',False))
 
 @app.route('/user/<name>')
 def user(name):
