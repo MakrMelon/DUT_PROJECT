@@ -21,4 +21,8 @@ def create_app(config_type):
 	db.init_app(app)
 	mail.init_app(app)
 
+	#蓝本
+	from .main import main as main_blueprint
+	app.register_blueprint(main_blueprint)
+
 	return app
