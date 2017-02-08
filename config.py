@@ -28,7 +28,7 @@ class DevelopConfig(Config):
 
 class TestConfig(Config):
 	TESTING = True
-	SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
+	SQLALCHEMY_DATABASE_URI = 'mysql://root:211314@localhost:3306/blog_test'
 
 
 class ProductionConfig(Config):
