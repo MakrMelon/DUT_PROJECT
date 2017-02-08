@@ -5,6 +5,7 @@ from flask.ext.script import Shell
 from flask.ext.migrate import Migrate,MigrateCommand    #数据库迁移模块
 
 from blog import create_app, db
+from blog.models import User, Role
 
 
 def make_shell_context():
