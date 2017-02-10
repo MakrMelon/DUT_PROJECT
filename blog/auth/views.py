@@ -80,11 +80,12 @@ def before_request():
 	(3) 请求的端点(使用 request.endpoint 获取)不在认证蓝本中。访问认证路由要获取权
  		限,因为这些路由的作用是让用户确认账户或执行其他账户管理操作。
 	'''
-	if current_user.is_authenticated\
-		and not current_user.confirmed\
-		and request.endpoint[:5] != 'auth.'\
-		and request.endpoint != 'static':
-		return redirect(url_for('auth.unconfirmed'))
+	if current_user.is_authenticated:
+		current_user.ping()
+		if not current_user.confirmed\
+			and request.endpoint[:5] != 'auth.'\
+			and request.endpoint != 'static':
+			return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
