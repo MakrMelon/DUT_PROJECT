@@ -7,33 +7,27 @@ from flask import render_template, session, redirect, url_for, current_app, abor
 from flask.ext.login import current_user, login_required
 
 from . import main
-from .forms import NameForm, EditProfileForm, EditAdminProfileForm
+from .forms import NameForm, EditProfileForm, EditAdminProfileForm, PostForm
 from .. import db
-from ..models import User
+from ..models import User, Role, Permission, Post
 from ..email import send_email
 from ..decorators import admin_required
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-	print current_app.config['ADMIN']
-	form = NameForm()
-	if form.validate_on_submit():
-		user = User.query.filter_by(username=form.name.data).first()
-		if	user is None:
-			user = User(username=form.name.data)
-			db.session.add(user)
-			session['known'] = False
-			if current_app.config['ADMIN']:
-				send_email(current_app.config['ADMIN'],'new user '+form.name.data,'mail/new_user',user=user)
-	
-		else:
-			session['known'] = True
-		session['name'] = form.name.data
-		form.name.data = ''
-		return redirect(url_for('.index'))
-	return render_template('index.html',current_time=datetime.utcnow(),name=session.get('name'),\
-		form=form,known=session.get('known',False))
-
+	form = PostForm()
+	if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+		'''
+		current_user 由 Flask-Login 提供,和所有上下文变量一样,也是通过线程内的代理对象实 现。
+		这个对象的表现类似用户对象,但实际上却是一个轻度包装,包含真正的用户对象。 数据库需要真正的
+		用户对象,因此要调用 _get_current_object()方法
+		'''
+		post = Post(body=form.body.data,author=current_user._get_current_object())
+		db.session.add(post)
+	 	return redirect(url_for('.index'))
+	posts = Post.query.order_by(Post.timestamp.desc()).all()
+	return render_template('index.html', form=form, posts=posts)
+             
 @main.route('/user/<username>')
 def user(username):
 	user = User.query.filter_by(username=username).first()
@@ -83,5 +77,3 @@ def edit_admin_profile(id):
 	form.about_me.data = user.about_me
 	return render_template('edit_profile.html',form=form,user=user)
 
-
-	
