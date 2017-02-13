@@ -5,11 +5,11 @@ from flask.ext.script import Shell
 from flask.ext.migrate import Migrate,MigrateCommand    #数据库迁移模块
 
 from blog import create_app, db
-from blog.models import User, Role
+from blog.models import User, Role, Post
 
 
 def make_shell_context():
-	return dict(app=app,db=db,User=User,Role=Role)
+	return dict(app=app,db=db,User=User,Role=Role,Post=Post)
 
 app = create_app('default')
 
