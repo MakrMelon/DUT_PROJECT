@@ -61,7 +61,6 @@ class Role(db.Model):
 		db.session.commit()
 
 
-
 class Follow(db.Model):
 	__tablename__ = 'follows'
 	follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
@@ -78,7 +77,6 @@ class User(UserMixin,db.Model):
 	password_hash = db.Column(db.String(128))
 	email = db.Column(db.String(64),unique=True,index=True)
 	confirmed = db.Column(db.Boolean,default=False)   #用户邮箱验证
-
 	name = db.Column(db.String(64))
 	location = db.Column(db.String(64))
 	about_me = db.Column(db.Text())
@@ -86,7 +84,6 @@ class User(UserMixin,db.Model):
 	last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
 	avatar_hash = db.Column(db.String(32))  
 	posts = db.relationship('Post', backref='author', lazy='dynamic')
-
 	#关注相关
 	'''
 		某个用户关注了 100 个用户,调用 user.followed.all() 后会返回一个列 表,其中包含 100 个 Follow 实例,每一
@@ -100,7 +97,6 @@ class User(UserMixin,db.Model):
 	的实体也删除,因为这样能有效销毁联接。这就是层叠选项值 delete-orphan 的作用。cascade 参数的值是一组由逗号分隔的
 	层叠选项,这看起来可能让人有 点困惑,但 all 表示除了 delete-orphan 之外的所有层叠选项。设为 all, delete-orphan 
 	的意思是启用所有默认层叠选项,而且还要删除孤儿记录。
-
 	'''
 	#followed 和 followers 关系都定义为单独的一对多关系。
 	followed = db.relationship('Follow',
@@ -117,10 +113,6 @@ class User(UserMixin,db.Model):
 								backref=db.backref('followed', lazy='joined'),
 								lazy='dynamic',
 								cascade='all, delete-orphan')
-
-
-
-
 
 	def __init__(self,**kwargs):
 		super(User,self).__init__(**kwargs)
@@ -186,7 +178,6 @@ class User(UserMixin,db.Model):
 		from sqlalchemy.exc import IntegrityError
 		from random import seed
 		import forgery_py
-
 		seed()
 		for i in range(count):
 			u = User(email=forgery_py.internet.email_address(),
@@ -248,7 +239,6 @@ class Post(db.Model):
 	def generate_fake_posts(count=100):
 		from random import seed, randint
 		import forgery_py
-
 		seed()
 		user_count = User.query.count()
 		for i in range(count):
@@ -266,10 +256,6 @@ class Post(db.Model):
 		target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'),
 														tags=allowed_tags, strip=True))
 		
-db.event.listen(Post.body, 'set', Post.on_changed_body)
-
-	
-
 
 '''
 这个对象继承自 Flask-Login 中的 AnonymousUserMixin 类,
@@ -284,4 +270,5 @@ class AnonymousUser(AnonymousUserMixin):
 		return False
 
 
+db.event.listen(Post.body, 'set', Post.on_changed_body)
 login_manager.anonymous_user = AnonymousUser
