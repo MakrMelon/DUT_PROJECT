@@ -8,9 +8,9 @@ from flask import render_template, session, redirect, url_for, current_app, abor
 from flask.ext.login import current_user, login_required
 
 from . import main
-from .forms import NameForm, EditProfileForm, EditAdminProfileForm, PostForm
+from .forms import NameForm, EditProfileForm, EditAdminProfileForm, PostForm, CommentForm
 from .. import db
-from ..models import User, Role, Permission, Post
+from ..models import User, Role, Permission, Post, Comment
 from ..email import send_email
 from ..decorators import admin_required, permission_required
 
@@ -108,10 +108,29 @@ def edit_admin_profile(id):
 	form.about_me.data = user.about_me
 	return render_template('edit_profile.html',form=form,user=user)
 
-@main.route('/post/<int:id>')
+@main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
 	post = Post.query.get_or_404(id)
-	return render_template('post.html', posts=[post])
+	form = CommentForm()
+	if form.validate_on_submit():
+		comment = Comment(body=form.body.data,
+							post = post,
+							author=current_user._get_current_object())
+		db.session.add(comment)
+		flash('Your comment has been published.')
+		return redirect(url_for('.post', id=post.id, page=-1))
+	page = request.args.get('page', 1, type=int)
+	#这是个特殊的页数,用来请求评论的最后一页,所以刚提交的评论才会出现在页面中。程序从查询字符串 
+	#中获取页数,发现值为-1时,会计算评论的总量和总页数,得出真正要显示的页数。
+	if page == -1:
+		#这个计算可以举几个例子  自己计算下
+		page = (post.comments.count() - 1)//current_app.config['BLOG_COMMENTS_PER_PAGE'] + 1
+	pagination = post.comments.order_by(Comment.timestamp.asc())\
+		.paginate(page, per_page=current_app.config['BLOG_COMMENTS_PER_PAGE'], error_out=False)
+	comments = pagination.items
+	return render_template('post.html', posts=[post], form=form, 
+							comments=comments, pagination=pagination)
+
 
 @main.route('/edit_post/<int:id>',methods=['GET','POST'])
 @login_required
