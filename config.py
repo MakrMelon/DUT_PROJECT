@@ -11,7 +11,7 @@ class Config:
 	MAIL_SERVER = 'smtp.qq.com'
 	MAIL_PREFIX = '欢迎来到本博客'
 	ADMIN = '879671510@qq.com'
-	FLASKY_POSTS_PER_PAGE = 10      #每页最多显示文章数
+	BLOG_POSTS_PER_PAGE = 10      #每页最多显示文章数
 	BLOG_FOLLOWERS_PER_PAGE = 10
 	BLOG_COMMENTS_PER_PAGE = 5
 
