@@ -20,9 +20,9 @@ def register():
 		db.session.add(user)
 		db.session.commit()
 		token = user.generate_token()
-		send_email(user.email,'Confirm your account','auth/email/confirm',user=user,token=token)
+		send_email(user.email,'邮箱验证','auth/email/confirm',user=user,token=token)
 
-		flash('A confirmation email has been sent to your email.')
+		flash('一封验证邮件已经发到你的邮箱.')
 		return redirect(url_for('main.index'))
 
 	return render_template('auth/register.html',form=form)
@@ -34,9 +34,9 @@ def confirm(token):
 	if current_user.confirmed:
 		return redirect(url_for('main.index'))
 	if current_user.confirm(token):
-		flash('You have confirmed your account.')
+		flash('验证邮箱成功.')
 	else:
-		flash('Invalid token!')
+		flash('未知的token!')
 	return redirect(url_for('main.index'))
 
 
@@ -44,9 +44,9 @@ def confirm(token):
 @login_required
 def resend_confirmation():
     token = current_user.generate_token()
-    send_email(current_user.email,'Confirm Your Account',
+    send_email(current_user.email,'验证邮箱',
                     'auth/email/confirm',user=current_user,token=token)
-    flash('A confirmation email has been sent to you by email.')
+    flash('一封验证邮件已经发到你的邮箱.')
     return redirect(url_for('main.index'))
 
 
@@ -62,14 +62,14 @@ def login():
 			#用户访问未授权的URL时会显示登录表单,Flask-Login会把原地址保存在查询字符串的next参数中
 			#这个参数可从 request.args 字典中读取。如果查询字符串中没有 next 参数,则重定向到首页
 			return redirect(request.args.get('next') or url_for('main.index')) 
-		flash('Invalid username or password.')
+		flash('用户名或密码错误.')
     return render_template('auth/login.html', form=form)
 
 
 @auth.route('/logout')
 def logout():
 	logout_user()
-	flash('You have logged out.')
+	flash('你已经登出.')
 	return redirect(url_for('main.index'))
 
 @auth.before_app_request

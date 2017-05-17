@@ -1,4 +1,17 @@
+.box2{
+    background:url(background.jpg) ;
+    background-size:cover;
+}
+.box1{
+    background:url(image.jpg) ;
+    background-size:cover;
+}
 .profile-thumbnail {
+    position: absolute;
+    width: 40px;
+    height: 40px
+}
+.profile-thumb {
     position: absolute;
 }
 .profile-header {

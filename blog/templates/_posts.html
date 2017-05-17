@@ -3,7 +3,12 @@
     <li class="post">
         <div class="post-thumbnail">
             <a href="{{ url_for('.user', username=post.author.username) }}">
-                <img class="img-rounded profile-thumbnail" src="{{ post.author.gravatar(size=40) }}">
+                {% if not post.author.image_id  %}
+               <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename ='2image.jpg') }}">
+               {% else %}
+               <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename =post.author.image_id) }}">
+
+                {% endif %}
             </a>
         </div>
         <div class="post-content">
@@ -19,18 +24,18 @@
             <div class="post-footer">
                 {% if current_user == post.author %}
                     <a href="{{ url_for('.edit_post', id=post.id) }}">
-                        <span class="label label-primary">Edit</span>
+                        <span class="label label-primary">编辑</span>
                     </a>
                 {% elif current_user.is_admin() %}
                     <a href="{{ url_for('.edit_post', id=post.id) }}">
-                         <span class="label label-danger">Edit [Admin]</span>
+                         <span class="label label-danger">管理员编辑</span>
                     </a>
                 {% endif %}
                 <a href="{{ url_for('.post', id=post.id) }}">
-                    <span class="label label-default">Permalink</span>
+                    <span class="label label-default">文章链接</span>
                 </a>
                 <a href="{{ url_for('.post', id=post.id) }}#comments">
-                    <span class="label label-primary">{{ post.comments.count() }} Comments</span>
+                    <span class="label label-primary">{{ post.comments.count() }}  评论</span>
                 </a>
             </div>
             

@@ -5,11 +5,11 @@ from flask.ext.login import UserMixin, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer   #邮箱验证token
 from flask import current_app, request
 from datetime import datetime
-import hashlib
 from markdown import markdown
 import bleach
 
 from . import db, login_manager
+import random
 
 
 #Flask-Login 要求程序实现一个回调函数,使用指定的标识符加载用户
@@ -72,7 +72,7 @@ class User(UserMixin,db.Model):
 	__tablename__ = 'users'
 	id = db.Column(db.Integer,primary_key=True)
 	username = db.Column(db.String(64),unique=True,index=True)
-	age = db.Column(db.Integer,unique=False,default=10)
+	#age = db.Column(db.Integer,unique=False,default=10)
 	role_id = db.Column(db.Integer,db.ForeignKey('roles.id'))
 	password_hash = db.Column(db.String(128))
 	email = db.Column(db.String(64),unique=True,index=True)
@@ -82,8 +82,8 @@ class User(UserMixin,db.Model):
 	about_me = db.Column(db.Text())
 	member_since = db.Column(db.DateTime(),default=datetime.utcnow)
 	last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
-	avatar_hash = db.Column(db.String(32))  
 	posts = db.relationship('Post', backref='author', lazy='dynamic')
+	image_id = db.Column(db.String(32))
 	#关注相关
 	'''
 		某个用户关注了 100 个用户,调用 user.followed.all() 后会返回一个列 表,其中包含 100 个 Follow 实例,每一
@@ -122,8 +122,8 @@ class User(UserMixin,db.Model):
 				self.role = Role.query.filter_by(permissions=0xff).first() 
 			else:
 				self.role = Role.query.filter_by(default=True).first()
-		if self.email is not None and self.avatar_hash is None:
-			self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+		if self.email is not None and self.image_id is None:
+			self.image_id = str(random.randint(1,10)) + 'image.jpg'
 		self.follow(self)
 
 	def __repr__(self):
@@ -131,7 +131,7 @@ class User(UserMixin,db.Model):
 
 	@property
 	def password(self):
-		raise AttributeError('password is not a readble attribute')
+		raise AttributeError('密码不可读')
 
 	@password.setter
 	def password(self,password):
@@ -165,15 +165,6 @@ class User(UserMixin,db.Model):
 	def ping(self):
 		self.last_seen = datetime.utcnow()
 		db.session.add(self)
-
-	def gravatar(self, size=100,default='identicon',rating='g'):
-		if request.is_secure:
-			url = 'https://secure.gravatar.com/avatar'
-		else:
-			url = 'http://www.gravatar.com/avatar'
-		hash = self.avatar_hash or hashlib.md5(self.email.encode('utf-8')).hexdigest()
-		return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
-			url=url, hash=hash, size=size, default=default, rating=rating)
 
 	@staticmethod
 	def generate_fake_users(count = 100):

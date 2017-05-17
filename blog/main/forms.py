@@ -10,27 +10,26 @@ from ..models import Role, User
 
 
 class NameForm(Form):
-	name = StringField("What's your name?",validators=[Required()])
-	submit = SubmitField('Submit')
+	name = StringField("用户名?",validators=[Required()])
+	submit = SubmitField('提交')
 
 
 class EditProfileForm(Form):
-	name = StringField('Real name', validators=[Length(0, 64)]) 
-	location = StringField('Location', validators=[Length(0, 64)]) 
-	about_me = TextAreaField('About me')
-	submit = SubmitField('Submit')
+	name = StringField('姓名', validators=[Length(0, 64)]) 
+	location = StringField('地址', validators=[Length(0, 64)]) 
+	about_me = TextAreaField('关于我')
+	submit = SubmitField('提交')
 
 class EditAdminProfileForm(Form):
-	email = StringField('Email', validators=[Required(),Length(1,64),Email()])
-	username = StringField('Username',validators=[Required(),Length(1,64),\
-				Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'Usernames must have only letters, '
-                                               'numbers, dots or underscores')])
-	confirmed = BooleanField('Confirmed')
-	role = SelectField('Role',coerce=int)
-	name = StringField('Real name',validators=[Length(0,64)])
-	location = StringField('Location',validators=[Length(0,64)])
-	about_me = TextAreaField('About me')
-	submit = SubmitField('Submit')
+	email = StringField('邮箱', validators=[Required(),Length(1,64),Email()])
+	username = StringField('用户名',validators=[Required(),Length(1,64),\
+				Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'必须只包含字母数字标点下划线')])
+	confirmed = BooleanField('验证否')
+	role = SelectField('角色',coerce=int)
+	name = StringField('姓名',validators=[Length(0,64)])
+	location = StringField('地址',validators=[Length(0,64)])
+	about_me = TextAreaField('关于我')
+	submit = SubmitField('提交')
 
 	def __init__(self,user,*args,**kwargs):
 		super(EditAdminProfileForm,self).__init__(*args,**kwargs)
@@ -39,19 +38,19 @@ class EditAdminProfileForm(Form):
 
 	def validate_email(self,field):
 		if field.data != self.user.email and User.query.filter_by(email=field.data).first():
-			raise ValidationError('Email already registered.')
+			raise ValidationError('邮箱已存在.')
 
 	def validate_username(self,field):
 		if field.data != self.user.username and User.query.filter_by(username=field.data).first():
-			raise ValidationError('Username already in use.')
+			raise ValidationError('用户名已存在.')
 
 
 class PostForm(Form):
-	body = PageDownField("What on your mind?", validators=[Required()])
-	submit = SubmitField('Submit')
+	body = PageDownField("写出你的想法?", validators=[Required()])
+	submit = SubmitField('提交')
 
 
 class CommentForm(Form):
-	body = StringField("Enter your comment", validators=[Required()])
-	submit = SubmitField('Submit')
+	body = StringField("写出你的评论", validators=[Required()])
+	submit = SubmitField('提交')
 

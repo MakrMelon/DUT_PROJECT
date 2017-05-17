@@ -25,7 +25,7 @@ class DevelopConfig(Config):
 	MAIL_PORT = 587
 	MAIL_USE_TLS = True  #启用传输层安全|
 	MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or '879671510@qq.com'
-	MAIL_PASSWORD = os.environ.get('MAIL_CODE') or 'ipnokqkszfxubfgb'
+	MAIL_PASSWORD = os.environ.get('MAIL_CODE') or 'eztyaupqggrpbchg'
 	SQLALCHEMY_DATABASE_URI = 'mysql://root:211314@localhost:3306/blog'
 
 

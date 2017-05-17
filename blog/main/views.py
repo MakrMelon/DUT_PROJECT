@@ -75,7 +75,7 @@ def  edit_profile():
 		current_user.location = form.location.data
 		current_user.about_me = form.about_me.data
 		db.session.add(current_user)
-		flash('Your profile has been updated')
+		flash('资料已更新')
 		return redirect(url_for('main.user',username=current_user.username))
 	form.name.data = current_user.name
 	form.location.data = current_user.location
@@ -97,7 +97,7 @@ def edit_admin_profile(id):
 		user.location = form.location.data
 		user.about_me = form.about_me.data
 		db.session.add(user)
-		flash('The profile has been updated.')
+		flash('资料已更新.')
 		return redirect(url_for('main.user',username=user.username))
 	form.email.data = user.email
 	form.username.data = user.username
@@ -117,7 +117,7 @@ def post(id):
 							post = post,
 							author=current_user._get_current_object())
 		db.session.add(comment)
-		flash('Your comment has been published.')
+		flash('评论已发布.')
 		return redirect(url_for('.post', id=post.id, page=-1))
 	page = request.args.get('page', 1, type=int)
 	#这是个特殊的页数,用来请求评论的最后一页,所以刚提交的评论才会出现在页面中。程序从查询字符串 
@@ -128,7 +128,7 @@ def post(id):
 	pagination = post.comments.order_by(Comment.timestamp.asc())\
 		.paginate(page, per_page=current_app.config['BLOG_COMMENTS_PER_PAGE'], error_out=False)
 	comments = pagination.items
-	return render_template('post.html', posts=[post], form=form, 
+	return render_template('post.html',posts=[post], form=form, 
 							comments=comments, pagination=pagination)
 
 
@@ -142,7 +142,7 @@ def edit_post(id):
 	if form.validate_on_submit():
 		post.body = form.body.data
 		db.session.add(post)
-		flash('The post has been updated.')
+		flash('文章已发布.')
 	 	return redirect(url_for('.post',id=post.id))
 	form.body.data = post.body
 	return render_template('edit_post.html', form=form)
@@ -153,13 +153,13 @@ def edit_post(id):
 def follow(username):
 	user = User.query.filter_by(username=username).first()
 	if user is None:
-		flash('Invalid user.')
+		flash('未知用户.')
 		return redirect(url_for('.index'))
 	if current_user.is_following(user):
-		flash('You are already following this user.')
+		flash('你已经关注了这个用户.')
 		return redirect(url_for('.user', username=username))
 	current_user.follow(user)
-	flash('You are now following %s.' % username)
+	flash('你成功关注了这个用户 %s.' % username)
 	return redirect(url_for('.user', username=username))
 
 @main.route('/unfollow/<username>')
@@ -168,41 +168,41 @@ def follow(username):
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('Invalid user.')
+        flash('未知用户.')
         return redirect(url_for('.index'))
     if not current_user.is_following(user):
-        flash('You are not following this user.')
+        flash('你并未关注这个用户.')
         return redirect(url_for('.user', username=username))
     current_user.unfollow(user)
-    flash('You are not following %s anymore.' % username)
+    flash('成功取消关注.')
     return redirect(url_for('.user', username=username))
 
 @main.route('/followers/<username>')
 def followers(username):
 	user = User.query.filter_by(username=username).first()
 	if user is None:
-		flash('Invalid user.')
+		flash('未知用户.')
 		return redirect(url_for('.index'))
 	page = request.args.get('page', 1, type=int)
 	pagination = user.followers.paginate(page, 
 										per_page=current_app.config['BLOG_FOLLOWERS_PER_PAGE'],
 										error_out=False)
 	follows = [{'user': item.follower, 'timestamp': item.timestamp} for item in pagination.items]
-	return render_template('followers.html', user=user, title="Followers of",
+	return render_template('followers.html', user=user, title=" 关注者们",
 							endpoint='.followers', pagination=pagination, follows=follows)
 
 @main.route('/followed_by/<username>')
 def followed_by(username):
 	user = User.query.filter_by(username=username).first()
 	if user is None:
-		flash('Invalid user.')
+		flash('未知用户.')
 		return redirect(url_for('.index'))
 	page = request.args.get('page', 1, type=int)
 	pagination = user.followed.paginate(page, 
 										per_page=current_app.config['BLOG_FOLLOWERS_PER_PAGE'],
 										error_out=False)
 	follows = [{'user': item.followed, 'timestamp': item.timestamp} for item in pagination.items]
-	return render_template('followers.html', user=user, title="Followed by",
+	return render_template('followers.html', user=user, title="正在关注",
 							endpoint='.followed_by', pagination=pagination, follows=follows)
 
 

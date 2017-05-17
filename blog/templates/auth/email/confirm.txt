@@ -1,8 +1,7 @@
-Dear {{user.username}},
+亲爱的 {{user.username}},
 
-Welcome to Blog!
+欢迎来到 Blog!
 
-To confirm your account please click on the following link:
+验证账户请点击下面的链接:
 
 {{url_for('auth.confirm',token=token,_external=True)}}
-
