@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{% extends "reuse/base.html" %}
+{% import "reuse/_macros.html" as macros %}
 
 {% block title %}Blog - {{ title }} {% endblock %}
 
@@ -13,7 +13,11 @@
     <tr>
         <td>
             <a href="{{ url_for('.user', username = follow.user.username) }}">
-                <img class="img-rounded" src="{{ follow.user.gravatar(size=32) }}">
+                {% if not follow.user.image_id  %}
+               <img class="img-rounded profile-follower" src="{{ url_for('static', filename ='2image.jpg') }}">
+               {% else %}
+               <img class="img-rounded profile-follower" src="{{ url_for('static', filename =follow.user.image_id) }}">
+                {% endif %}
                 {{ follow.user.username }}
             </a>
         </td>

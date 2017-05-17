@@ -1,22 +1,20 @@
-{% extends "base.html" %}
+{% extends "reuse/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-{% import "_macros.html" as macros %}
+{% import "reuse/_macros.html" as macros %}
 
 
 {% block title %}Blog{% endblock %}
 
 <!-- 主体内容-->
 {% block page_content %}
-<div class="page-header">
-    <h1>
-        欢迎来到本博客,
-        {% if current_user.is_authenticated %}
-        {{current_user.username}}
-        {% else %}
-        游客
-        {% endif %}
-    </h1>
-</div>
+<h1 class = "index-title">
+    欢迎来到本博客,
+    {% if current_user.is_authenticated %}
+    {{current_user.username}}
+    {% else %}
+    游客
+    {% endif %}
+</h1>
 
 
 <!--the template of articles-->
@@ -32,7 +30,7 @@
         <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_followed') }}">关注者文章</a></li>
         {% endif %}
     </ul>
-    {% include '_posts.html' %}
+    {% include 'reuse/_posts.html' %}
 </div>
 {% if pagination %}
 <div class="pagination">
@@ -45,7 +43,31 @@
 {% block scripts %}
 {{ super() }}
 {{ pagedown.include_pagedown() }}
+
+
+<script>
+
+function handleInput (event) {
+    var classname = "textarea-input";
+    var text = event.target.value;
+    if (text && text.length) {
+         document.querySelector("#flask-pagedown-body-preview").classList.remove(classname);
+    } else {
+        document.querySelector("#flask-pagedown-body-preview").classList.add(classname);
+    }
+}
+    window.addEventListener('load', function () {
+        if (!document.querySelector("#flask-pagedown-body")) return;
+        document.querySelector("#flask-pagedown-body-preview").classList.add("textarea-input");
+        document.querySelector("#flask-pagedown-body").addEventListener('input', handleInput);
+
+    });
+</script>
+
 {% endblock %}
+
+
+
 
 
 

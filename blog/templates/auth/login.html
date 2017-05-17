@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "reuse/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}Blog - 登入{% endblock %}
@@ -14,5 +14,4 @@
         <a href="{{ url_for('auth.register') }}">请点击这里注册</a> 
     </p>
 </div>
-
 {% endblock %}

@@ -1,10 +1,27 @@
-.box2{
-    background:url(background.jpg) ;
-    background-size:cover;
+html { height: 100%; }
+body { height: 100%; color: #FFFFFF; padding: 0; }
+a { text-decoration: none;  cursor: pointer; }
+a:hover  { text-decoration:  none; cursor: pointer; }
+ul, li{ margin: 0; padding: 0; }
+
+.post:first-child {
+    border-top: 1px solid #FFFFFF;
 }
-.box1{
-    background:url(image.jpg) ;
-    background-size:cover;
+.form { position: relative; }
+.form:after { content: "fdsfdsa"; font-size: 0; height: 0; display: block; clear: both;  }
+.btn { float: right;}
+.flask-pagedown { padding: 5px 0; }
+textarea.flask-pagedown-input {
+    resize: none;
+    height: 400px;
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, .2);
+}
+.textarea-input {
+    display: none !important;
+}
+.navbar.navbar-inverse {
+    background: #48525e;
 }
 .profile-thumbnail {
     position: absolute;
@@ -13,6 +30,12 @@
 }
 .profile-thumb {
     position: absolute;
+    width:160px;
+    height:160px;
+}
+.profile-follower{
+    width:40px;
+    height: 40px
 }
 .profile-header {
     min-height: 260px;
@@ -36,7 +59,6 @@ ul.posts li.post {
     border-bottom: 1px solid #e0e0e0;
 }
 ul.posts li.post:hover {
-    background-color: #f0f0f0;
 }
 div.post-date {
     float: right;
@@ -62,14 +84,12 @@ ul.comments {
 ul.comments li.comment {
     margin-left: 32px;
     padding: 8px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #FFFFFF;
 }
 ul.comments li.comment:nth-child(1) {
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #FFFFFF;
 }
-ul.comments li.comment:hover {
-    background-color: #f0f0f0;
-}
+ul.comments li.comment:hover {}
 div.comment-date {
     float: right;
 }
@@ -96,6 +116,7 @@ div.flask-pagedown-preview {
     margin: 10px 0px 10px 0px;
     border: 1px solid #e0e0e0;
     padding: 4px;
+    border-radius: 4px;
 }
 div.flask-pagedown-preview h1 {
     font-size: 140%;
@@ -118,3 +139,17 @@ div.flask-pagedown-preview h3 {
 .table.followers tr {
     border-bottom: 1px solid #e0e0e0;
 }
+
+.index-title {
+    color: #FFFFFF;
+}
+.nav-tabs {
+    border: none !important;
+    margin: 0px 0 20px;
+    color: #FFFFFF;
+}
+.nav-tabs li a{
+    transition: all .3s ease-in-out;
+}
+.page-header { border-bottom: none; }
+::selection { background: none; }
