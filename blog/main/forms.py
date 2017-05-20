@@ -46,11 +46,16 @@ class EditAdminProfileForm(Form):
 
 
 class PostForm(Form):
-	body = PageDownField("写出你的想法?", validators=[Required()])
+	title = StringField('请写出你的题目.', validators=[Length(0,64),Required()])
+	body = PageDownField("请在这里编辑文章主体.", validators=[Required()])
 	submit = SubmitField('提交')
 
 
 class CommentForm(Form):
 	body = StringField("写出你的评论", validators=[Required()])
 	submit = SubmitField('提交')
+
+class SearchForm(Form):
+	target = StringField("请输入要搜索的题目.",validators=[Length(0,64),Required()])
+	submit = SubmitField('搜索')
 

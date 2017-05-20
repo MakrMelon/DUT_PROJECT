@@ -8,7 +8,7 @@ from flask import render_template, session, redirect, url_for, current_app, abor
 from flask.ext.login import current_user, login_required
 
 from . import main
-from .forms import NameForm, EditProfileForm, EditAdminProfileForm, PostForm, CommentForm
+from .forms import NameForm, EditProfileForm, EditAdminProfileForm, PostForm, CommentForm, SearchForm
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
 from ..email import send_email
@@ -23,7 +23,7 @@ def index():
 		这个对象的表现类似用户对象,但实际上却是一个轻度包装,包含真正的用户对象。 数据库需要真正的
 		用户对象,因此要调用 _get_current_object()方法
 		'''
-		post = Post(body=form.body.data,author=current_user._get_current_object())
+		post = Post(title=form.title.data,body=form.body.data,author=current_user._get_current_object())
 		db.session.add(post)
 	 	return redirect(url_for('.index'))
 	show_followed = False
@@ -235,3 +235,16 @@ def moderate_disable(id):
 	comment.disabled = True
 	db.session.add(comment)
 	return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+
+@main.route('/search', methods=['GET','POST'])
+def search():
+	form = SearchForm()
+	if  form.validate_on_submit():
+		page = request.args.get('page', 1, type=int)
+		pagination = Post.query.filter_by(title=form.target.data).order_by(Post.timestamp.desc()).paginate(
+		page, per_page=current_app.config['BLOG_POSTS_PER_PAGE'],error_out=False)
+		posts = pagination.items
+	 	return render_template('search.html',posts=posts,form=form,pagination=pagination)
+	return render_template('search.html', form=form)
+
