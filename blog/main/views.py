@@ -144,6 +144,7 @@ def edit_post(id):
 		db.session.add(post)
 		flash('文章已发布.')
 	 	return redirect(url_for('.post',id=post.id))
+	form.title.data = post.title
 	form.body.data = post.body
 	return render_template('edit_post.html', form=form)
 
@@ -242,9 +243,12 @@ def search():
 	form = SearchForm()
 	if  form.validate_on_submit():
 		page = request.args.get('page', 1, type=int)
-		pagination = Post.query.filter_by(title=form.target.data).order_by(Post.timestamp.desc()).paginate(
-		page, per_page=current_app.config['BLOG_POSTS_PER_PAGE'],error_out=False)
+		pagination = Post.query.filter_by(title=form.target.data)\
+			.order_by(Post.timestamp.desc()).paginate(
+			page, per_page=current_app.config['BLOG_POSTS_PER_PAGE'],
+			error_out=False)
 		posts = pagination.items
-	 	return render_template('search.html',posts=posts,form=form,pagination=pagination)
+	 	return render_template('search.html',posts=posts,form=form,
+	 		pagination=pagination)
 	return render_template('search.html', form=form)
 

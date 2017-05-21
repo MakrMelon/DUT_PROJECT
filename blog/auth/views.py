@@ -12,20 +12,18 @@ from ..email import send_email
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-	form = RegistrationForm()
-	if form.validate_on_submit():
-		user = User(username=form.username.data,
-					email=form.email.data,
-					password=form.password.data)
+	registrationForm = RegistrationForm()
+	if registrationForm.validate_on_submit():
+		user = User(username=registrationForm.username.data,
+					email=registrationForm.email.data,
+					password=registrationForm.password.data)
 		db.session.add(user)
 		db.session.commit()
 		token = user.generate_token()
 		send_email(user.email,'邮箱验证','auth/email/confirm',user=user,token=token)
-
 		flash('一封验证邮件已经发到你的邮箱.')
 		return redirect(url_for('main.index'))
-
-	return render_template('auth/register.html',form=form)
+	return render_template('auth/register.html',form=registrationForm)
 
 
 @auth.route('/confirm/<token>')
